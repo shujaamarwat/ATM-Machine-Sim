@@ -7,13 +7,33 @@
 #include <sys/socket.h> 
 #include<netinet/in.h> 
 #include<unistd.h> 
-#include<stdlib.h> 
+#include<stdlib.h>
+#include <string> 
 
 #define PORT 5000 
 #define MAXLINE 1000 
 
 using namespace std;
 
+void initiateCardReading(string& Message){
+
+	string cardno;
+	getline(cin, cardno, '\n');
+
+	Message = "1," + cardno;
+	
+		
+}
+
+bool verifyResponse(char* response){
+
+	if (strcmp(response,"OK") == 0){
+		return true;
+	}
+	else
+		return false;
+		
+}
 // Driver code 
 int main() 
 { 
@@ -38,17 +58,31 @@ int main()
 		exit(0); 
 	} 
 
-
-	getline(cin, message, '\n');
-
-
-	// request to send datagram 
-	// no need to specify server address in sendto 
-	// connect stores the peers IP and port 
-	sendto(sockfd, message.c_str(), MAXLINE, 0, (struct sockaddr*)NULL, sizeof(servaddr)); 
+	
+	///////////////////// CARD READIND FUNCTIONALITY ////////////////
+	
+	do{
+	// Final Card message variable
+	string Message;
+	
+	// Inititaing Card reading
+	initiateCardReading(Message);
+	
+	// Send card details to server
+	sendto(sockfd, Message.c_str(), MAXLINE, 0, (struct sockaddr*)NULL, sizeof(servaddr)); 
 	
 	// waiting for response 
-	n = recvfrom(sockfd, buffer, sizeof(buffer), 0, (struct sockaddr *)&servaddr, NULL); 
+	n = recvfrom(sockfd, buffer, sizeof(buffer), 0, (struct sockaddr *)&servaddr, NULL);
+	
+	buffer[n] = '\0'; 
+	
+	cout<<buffer<<endl;
+	}while( verifyResponse(buffer) != true);// verifying response
+	
+	//////////////////////////////////////////////////////////////////
+	
+	cout<<"Successful"<<endl;
+		
 	buffer[n] = '\0'; 
 	printf("CLIENT >> ");
 	printf("Message: ");
