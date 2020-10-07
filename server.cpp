@@ -30,7 +30,7 @@ struct USER_VERIFICATION {
 		CARDID = cardid;
 		PINCODE = password;
 		token = -1;
-		amount = 10000;		
+		amount = 50000;		
 	}
 };
 
@@ -58,7 +58,7 @@ int findUserByToken (int token){
 	return -1;
 }
 
-vector<string> tokenizeRequest (buffer){
+vector<string> tokenizeRequest (string buffer){
 		stringstream ss(buffer); 
 	    vector<string> v; 
 	  
@@ -149,7 +149,7 @@ int main()
 			string statusCode;
 			int token = -1;
 
-			int index = findUser(v[2]);
+			int index = findUser(v[1]);
 			if (index < 0){
 				statusCode = "BAD";
 			}
@@ -204,16 +204,17 @@ int main()
 					statusCode = "BAD";
 				}
 				else {
-					statusCode = "OK";
 					users[index].amount -= stoi(v[1]);
 					amount = users[index].amount;
 					statusCode = "OK";
 				}
 				
 			}
-
-			string response = statusCode;
-			response += amount;
+			
+			string response = statusCode + ",";
+			response += to_string(amount);
+			
+			cout<<response<<endl;
 			sendto(listenfd, response.c_str(), MAXLINE, 0, 
 			(struct sockaddr*)&cliaddr, sizeof(cliaddr));
 
