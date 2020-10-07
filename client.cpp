@@ -54,11 +54,11 @@ bool makeToken(char * response){
 				cout<<"Successfull"<<endl;
 			}	
 			token = strtok(NULL, ","); 
+			count++;
 		}
 		else
 		{
 			strcpy(ttt, token);	
-			token = strtok(NULL, ","); 	
 		}
     	}
 	
@@ -126,8 +126,6 @@ int main()
 	
 	///////// Enter PIN///////////////
 	
-	do 
-	{
 		pin_veri(full_pin,card);
 		
 		sendto(sockfd, full_pin.c_str(), MAXLINE, 0, (struct sockaddr*)NULL, sizeof(servaddr)); 
@@ -135,7 +133,7 @@ int main()
 		n = recvfrom(sockfd, buffertoken, sizeof(buffertoken), 0, (struct sockaddr *)&servaddr, NULL); 
 		buffertoken[n] = '\0';
 		 
-	}while(verifyResponse(buffertoken)!=true) ;
+		makeToken(buffertoken) ;
 	
 	cout<<"Pin Verified"<<endl;
 	
