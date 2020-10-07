@@ -15,12 +15,75 @@
 using namespace std;
 
 // Driver code 
+
+string initiateCardReading(string& Message){
+
+	string cardno;
+	getline(cin, cardno, '\n');
+
+	Message = "1," + cardno;
+	
+	return cardno;	
+}
+
+bool verifyResponse(char* response){
+
+	if (strcmp(response,"OK") == 0){
+		return true;
+	}
+	else
+		return false;
+		
+}
+
+bool verifyToken(char* response){
+
+	for (int i=0 ;
+	if (strcmp(response,"") == 0){
+		return true;
+	}
+	else
+		return false;
+		
+}
+
+bool makeToken(char * response){
+
+	char *token = strtok(response, ",");
+	char *tt;
+	while (token != NULL) 
+    	{ 
+        	strcpy(tt, token);
+        	if (verifyToken(tt))
+		{
+			cout<<"Successfull"<endl;
+		}
+		
+        	token = strtok(NULL, ","); 
+    	}
+	
+	
+}
+
+
+void pin_veri(string &full_pin,string &card)
+{	
+	string pin;
+	getline(cin,pin,'\n');
+	
+	full_pin="2,"+card + ","+ pin;
+	cout<<full_pin<<endl;
+		
+}
+
 int main() 
 { 
-	char buffer[100]; 
+	char buffer[100], buffertoken[100];
 	string message = "Hello Server"; 
+	string full_pin;
 	int sockfd, n; 
 	struct sockaddr_in servaddr; 
+	string card;
 	
 	// clear servaddr 
 	bzero(&servaddr, sizeof(servaddr)); 
@@ -29,7 +92,9 @@ int main()
 	servaddr.sin_family = AF_INET; 
 	
 	// create datagram socket 
-	sockfd = socket(AF_INET, SOCK_DGRAM, 0); 
+	sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+	
+	 
 	
 	// connect to server 
 	if(connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) 
@@ -37,18 +102,44 @@ int main()
 		printf("\n Error : Connect Failed \n"); 
 		exit(0); 
 	} 
-
-
-	getline(cin, message, '\n');
-
-
-	// request to send datagram 
-	// no need to specify server address in sendto 
-	// connect stores the peers IP and port 
-	sendto(sockfd, message.c_str(), MAXLINE, 0, (struct sockaddr*)NULL, sizeof(servaddr)); 
+	
+	do{
+	// Final Card message variable
+	string Message;
+	
+	// Inititaing Card reading
+	card = initiateCardReading(Message);
+	
+	// Send card details to server
+	sendto(sockfd, Message.c_str(), MAXLINE, 0, (struct sockaddr*)NULL, sizeof(servaddr)); 
 	
 	// waiting for response 
-	n = recvfrom(sockfd, buffer, sizeof(buffer), 0, (struct sockaddr *)&servaddr, NULL); 
+	n = recvfrom(sockfd, buffer, sizeof(buffer), 0, (struct sockaddr *)&servaddr, NULL);
+	
+	buffer[n] = '\0'; 
+	
+	}while( verifyResponse(buffer) != true);// verifying response// verifying response
+
+	cout<<"User Found"<<endl;
+
+	//getline(cin, message, '\n');
+	
+	///////// Enter PIN///////////////
+	
+	do 
+	{
+		pin_veri(full_pin,card);
+		
+		sendto(sockfd, full_pin.c_str(), MAXLINE, 0, (struct sockaddr*)NULL, sizeof(servaddr)); 
+	
+		n = recvfrom(sockfd, buffertoken, sizeof(buffertoken), 0, (struct sockaddr *)&servaddr, NULL); 
+		buffertoken[n] = '\0';
+		 
+	}while(verifyResponse(buffertoken)!=true) ;
+	
+	cout<<"Pin Verified"<<endl;
+	
+	
 	buffer[n] = '\0'; 
 	printf("CLIENT >> ");
 	printf("Message: ");
