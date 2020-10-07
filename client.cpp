@@ -15,14 +15,14 @@
 
 using namespace std;
 
-void initiateCardReading(string& Message){
+string initiateCardReading(string& Message){
 
 	string cardno;
 	getline(cin, cardno, '\n');
 
 	Message = "1," + cardno;
 	
-		
+	return cardno;	
 }
 
 bool verifyResponse(char* response){
@@ -41,6 +41,7 @@ int main()
 	string message = "Hello Server"; 
 	int sockfd, n; 
 	struct sockaddr_in servaddr; 
+	string card;
 	
 	// clear servaddr 
 	bzero(&servaddr, sizeof(servaddr)); 
@@ -66,7 +67,7 @@ int main()
 	string Message;
 	
 	// Inititaing Card reading
-	initiateCardReading(Message);
+	card = initiateCardReading(Message);
 	
 	// Send card details to server
 	sendto(sockfd, Message.c_str(), MAXLINE, 0, (struct sockaddr*)NULL, sizeof(servaddr)); 
@@ -76,7 +77,6 @@ int main()
 	
 	buffer[n] = '\0'; 
 	
-	cout<<buffer<<endl;
 	}while( verifyResponse(buffer) != true);// verifying response
 	
 	//////////////////////////////////////////////////////////////////
