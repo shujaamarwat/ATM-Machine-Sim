@@ -36,30 +36,30 @@ bool verifyResponse(char* response){
 		
 }
 
-bool verifyToken(char* response){
 
-	for (int i=0 ;
-	if (strcmp(response,"") == 0){
-		return true;
-	}
-	else
-		return false;
-		
-}
 
 bool makeToken(char * response){
 
+	int count=0;
 	char *token = strtok(response, ",");
 	char *tt;
+	char *ttt;
 	while (token != NULL) 
     	{ 
-        	strcpy(tt, token);
-        	if (verifyToken(tt))
-		{
-			cout<<"Successfull"<endl;
+    		if (count==0)
+    		{
+			strcpy(tt, token);
+	  		if (verifyResponse(tt))
+			{
+				cout<<"Successfull"<<endl;
+			}	
+			token = strtok(NULL, ","); 
 		}
-		
-        	token = strtok(NULL, ","); 
+		else
+		{
+			strcpy(ttt, token);	
+			token = strtok(NULL, ","); 	
+		}
     	}
 	
 	
